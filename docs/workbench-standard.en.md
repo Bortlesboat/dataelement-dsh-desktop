@@ -188,6 +188,8 @@ DSH reserves shared entrances for the market, workbench switcher, and settings; 
 
 On macOS, after the sidebar collapses, window controls and the sidebar expansion button occupy the upper-left of main content. The host reserves `--dsh-frame-leading-clearance` width for a left-side embedded business panel and a semantic `<header>` that is the first child of a `customFrame` root. The toolbar may stay in the original 48px top row; the whole content need not move down. A custom toolbar with a different structure should use the same variable in its own styles to clear the controls. Do not cover window controls or `shell.leading`.
 
+On macOS only, the host makes the non-interactive area of this top-level semantic `<header>` draggable for standard left-side `embedded` panels and `customFrame`. Buttons, links, form controls, editable elements, ARIA controls, and their descendants remain interactive. Give menus and popovers inside the header the appropriate `role`; mark custom interactive containers with `data-dsh-no-drag` (or `data-window-drag="false"`). Do not limit dragging to the title text. Nested content headers are unaffected; Windows retains its separate host title bar.
+
 ## 5. Workbenches, sessions, and workspaces
 
 - One workbench may have many sessions; each session belongs to at most one workbench.

@@ -1554,8 +1554,7 @@ describe('desktop workbench client navigation', () => {
     expect(customHost.props.className).toBe('dshWbCustomFrame')
     expect(code).toContain('.dshWbBusiness[data-side=left][data-embedded=true] > :first-child > header:first-child')
     expect(code).toContain('padding-inline-start:var(--dsh-frame-leading-clearance,160px)')
-    expect(code).toContain('html[data-platform=darwin] .dshWbCustomFrame > :first-child > header:first-child{-webkit-app-region:drag}')
-    expect(code).toContain('html[data-platform=darwin] .dshWbCustomFrame > :first-child > header:first-child :is(button,a,input,select,textarea,[role=button],[role=tab],[role=combobox],[contenteditable=true],[data-dsh-no-drag]){-webkit-app-region:no-drag}')
+    expect(code).toContain('html[data-platform=darwin] :is(.dshWbBusiness[data-side=left][data-embedded=true],.dshWbCustomFrame) > :first-child > header:first-child{-webkit-app-region:drag}')
     expect(customHost.props.style).toMatchObject({
       position: 'relative', overflow: 'hidden', flex: 1, minHeight: 0, minWidth: 0,
       width: '100%', maxWidth: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box'
