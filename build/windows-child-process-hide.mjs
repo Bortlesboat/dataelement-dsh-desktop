@@ -81,25 +81,21 @@ export function enforceWindowsChildProcessHide(childProcess, syncBuiltinESMExpor
     return originalFork.call(this, modulePath, applyWindowsHide(args))
   }
 
-  // Node's custom hooks close over the original functions, so copying them
-  // would bypass windowsHide. Keep their promise contract on the wrappers.
-  for (const exec of [childProcess.exec, childProcess.execFile]) {
-    Object.defineProperty(exec, promisify.custom, {
-      value(...args) {
-        const { promise, resolve, reject } = Promise.withResolvers()
-        promise.child = exec(...args, (error, stdout, stderr) => {
-          if (error !== null) {
-            error.stdout = stdout
-            error.stderr = stderr
-            reject(error)
-          } else {
-            resolve({ stdout, stderr })
-          }
-        })
-        return promise
-      }
-    })
-  }
+  // Delegate to Node's own promisify hooks so Promise.child, Buffer output and
+  // error stdout/stderr stay native. Those hooks close over the original
+  // functions, so windowsHide must be applied before calling them.
+  const nativeExec = originalExec[promisify.custom]
+  const nativeExecFile = originalExecFile[promisify.custom]
+  Object.defineProperty(childProcess.exec, promisify.custom, {
+    ...Object.getOwnPropertyDescriptor(originalExec, promisify.custom),
+    value: (command, options) => nativeExec(command, applyWindowsHide(options))
+  })
+  Object.defineProperty(childProcess.execFile, promisify.custom, {
+    ...Object.getOwnPropertyDescriptor(originalExecFile, promisify.custom),
+    value: (file, args, options) => args && typeof args === 'object' && !Array.isArray(args)
+      ? nativeExecFile(file, applyWindowsHide(args))
+      : nativeExecFile(file, args, applyWindowsHide(options))
+  })
 
   syncBuiltinESMExports()
 }
